@@ -1,0 +1,1878 @@
+openapi: '3.0.3'
+info:
+  title: Blockmate
+  description: Blockmate API OpenAPI documentation
+  termsOfService: https://www.blockmate.io/term/terms-and-conditions
+  version: '0.0.1'
+
+paths:
+  #
+  # Authentication
+  #
+  /v1/auth:
+    get:
+      summary: Authenticate project
+      operationId: UserAPI-AuthenticateProject
+      tags:
+        - Authentication
+      servers:
+        - description: Authentication
+          url: https://auth.blockmate.io
+      security:
+        - ProjectToken: [ ]
+      responses:
+        200:
+          description: Returns a JWT for ProjectJWT
+          content:
+            application/json:
+              schema:
+                required:
+                  - token
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: some-token
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: missing key in request header
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+  /v1/auth/developer:
+    get:
+      summary: Authenticate developer
+      operationId: UserAPI-AuthenticateDeveloper
+      tags:
+        - Authentication
+      servers:
+        - description: Authentication
+          url: https://auth.blockmate.io
+      security:
+        - ProjectToken: [ ]
+      responses:
+        200:
+          description: Returns a JWT for UserJWT. This is a special user, mapped to the project. If you want to have multiple users, see User management.
+          content:
+            application/json:
+              schema:
+                required:
+                  - token
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: some-token
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: missing key in request header
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+  #
+  # User management
+  #
+  /v1/users:
+    get:
+      summary: List users
+      operationId: ListUsers
+      tags:
+        - User management
+      servers:
+        - description: Authentication
+          url: https://auth.blockmate.io
+      security:
+        - ProjectToken: [ ]
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: missing key in request header
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+    post:
+      summary: Create user
+      operationId: CreateUser
+      tags:
+        - User management
+      servers:
+        - description: Authentication
+          url: https://auth.blockmate.io
+      security:
+        - ProjectToken: [ ]
+      requestBody:
+        description: User
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: some-name
+      responses:
+        201:
+          description: User
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: missing key in request header
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+  /v1/users/{id}:
+    get:
+      summary: Get user
+      operationId: GetUser
+      tags:
+        - User management
+      servers:
+        - description: Authentication
+          url: https://auth.blockmate.io
+      security:
+        - ProjectToken: [ ]
+      parameters:
+        - description: User id
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: 4301140e-d639-11ec-9120-00155d03ab64
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: missing key in request header
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    post:
+      summary: Update user
+      operationId: UpdateUser
+      tags:
+        - User management
+      servers:
+        - description: Authentication
+          url: https://auth.blockmate.io
+      security:
+        - ProjectToken: [ ]
+      parameters:
+        - description: User id
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: 4301140e-d639-11ec-9120-00155d03ab64
+      requestBody:
+        description: User
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: some-name
+      responses:
+        200:
+          description: User
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: missing key in request header
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    delete:
+      summary: Delete user
+      operationId: DeleteUser
+      tags:
+        - User management
+      servers:
+        - description: Authentication
+          url: https://auth.blockmate.io
+      security:
+        - ProjectToken: [ ]
+      parameters:
+        - description: User id
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: 4301140e-d639-11ec-9120-00155d03ab64
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: OK
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: missing key in request header
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Not Found
+  /v1/users/{id}/auth:
+    get:
+      summary: Authenticate user
+      operationId: AuthUser
+      tags:
+        - User management
+      servers:
+        - description: Authentication
+          url: https://auth.blockmate.io
+      security:
+        - ProjectToken: [ ]
+      parameters:
+        - description: User id
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: 4301140e-d639-11ec-9120-00155d03ab64
+      responses:
+        200:
+          description: UserJWT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    description: UserJWT
+                    type: string
+                    example: some-token
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: missing key in request header
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Not Found
+  #
+  # Aggregated info
+  #
+  /v1/aggregate/account_providers:
+    get:
+      summary: Get list of account providers
+      operationId: AccountProvidersList
+      servers:
+        - description: Call
+          url: https://aisp-api.blockmate.io
+      security:
+        - UserJWT: [ ]
+      tags:
+        - Aggregated info
+      responses:
+        200:
+          description: List of account providers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountProvider"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: missing key in request header
+                    type: string
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Unauthorized
+                    type: string
+  /v1/aggregate/account_provider_hints:
+    get:
+      summary: Get list of account providers hints
+      operationId: AccountProviderHintsList
+      servers:
+        - description: Call
+          url: https://aisp-api.blockmate.io
+      security:
+        - UserJWT: [ ]
+      tags:
+        - Aggregated info
+      responses:
+        200:
+          description: List of account providers hints
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountProviderHint"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: missing key in request header
+                    type: string
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Unauthorized
+                    type: string
+  /v1/aggregate/accounts:
+    get:
+      summary: List accounts
+      operationId: Accounts
+      servers:
+        - description: Call
+          url: https://aisp-api.blockmate.io
+      security:
+        - UserJWT: [ ]
+      tags:
+        - Aggregated info
+      responses:
+        200:
+          description: List of user accounts.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  title: Account
+                  description: Represents an account.
+                  required:
+                    - id
+                    - name
+                    - description
+                    - verified
+                    - type
+                    - url
+                  type: object
+                  properties:
+                    id:
+                      example: 4cf7cf36-52a2-11ec-85b8-00155de33000
+                      type: string
+                    name:
+                      example: btc
+                      type: string
+                    description:
+                      example: My account
+                      type: string
+                    verified:
+                      example: true
+                      type: boolean
+                    type:
+                      example: crypto_wallet
+                      type: string
+                      enum:
+                        - crypto_wallet
+                        - crypto_exchange
+                        - crypto_nft
+                    url:
+                      example: onchain/bitcoin/account/4cf7cf36-52a2-11ec-85b8-00155de33000
+                      type: string
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: missing key in request header
+                    type: string
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Unauthorized
+                    type: string
+  /v1/aggregate/balance:
+    get:
+      summary: Get balance
+      operationId: Balance
+      parameters:
+        - name: currency
+          in: query
+          schema:
+            type: string
+            example: USD
+          description: |
+            Currency to convert to.
+      servers:
+        - description: Call
+          url: https://aisp-api.blockmate.io
+      security:
+        - UserJWT: [ ]
+      tags:
+        - Aggregated info
+      responses:
+        200:
+          description: Cumulated balance fo user accounts.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  balance:
+                    title: Balance response
+                    description: Represents a response from aggregated balance request.
+                    type: object
+                    required:
+                      - balance_sum
+                      - accounts
+                    properties:
+                      balance_sum:
+                        type: array
+                        items:
+                          '$ref': '#/components/schemas/Amount'
+                      accounts:
+                        type: array
+                        items:
+                          type: object
+                          required:
+                            - account_id
+                            - description
+                            - type
+                            - balance
+                            - state
+                            - name
+                            - verified
+                            - url
+                          properties:
+                            account_id:
+                              type: string
+                              example: 9f0f06ae-08d7-11ed-b3ef-00155d0eaa6e
+                            description:
+                              type: string
+                              example: My account
+                            type:
+                              type: string
+                              enum:
+                                - crypto_wallet
+                                - crypto_exchange
+                                - crypto_nft
+                            balance:
+                              type: array
+                              items:
+                                '$ref': '#/components/schemas/Amount'
+                            state:
+                              type: object
+                              properties:
+                                last_sync:
+                                  type: string
+                                  example: 2022-07-21T09:21:37.384496+00:00
+                                  description: null if initial sync was not yet done
+                                  nullable: true
+                            name:
+                              type: string
+                              example: some-name
+                            verified:
+                              type: boolean
+                              example: true
+                            url:
+                              type: string
+                              example: some-url
+                required:
+                  - balance
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: missing key in request header
+                    type: string
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Unauthorized
+                    type: string
+  /v1/aggregate/transactions:
+    get:
+      summary: Get transactions
+      operationId: Transactions
+      servers:
+        - description: Call
+          url: https://aisp-api.blockmate.io
+      parameters:
+        - name: since
+          in: query
+          schema:
+            type: string
+            format: date
+            pattern: "^[0-9]{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$"
+            example: 2020-01-01
+          description: |
+            Set time from which the transactions will be get.
+            The parameter is passed as-is to backend services.
+            The default value is 30 days before the actual date or 30 days before the date specified in "until" parameter.
+        - name: until
+          in: query
+          schema:
+            type: string
+            format: date
+            pattern: "^[0-9]{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$"
+            example: 2020-02-01
+          description: |
+            Set time to which the transactions will be get.
+            The parameter is passed as-is to backend services.
+            The default value is the actual date.
+        - name: currency
+          in: query
+          schema:
+            type: string
+            example: USD
+          description: |
+            Currency to convert to.
+        - name: account-filter
+          in: query
+          schema:
+            type: string
+            example: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+          description: |
+            Filter results to only provided account.
+            When omitted, it returns all transactions from all accounts.
+      security:
+        - UserJWT: [ ]
+      tags:
+        - Aggregated info
+      responses:
+        200:
+          description: Get user transactions.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accounts:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - id
+                        - description
+                        - verified
+                        - type
+                        - state
+                      properties:
+                        id:
+                          example: 0940bb4a-0940-11ed-9ed1-00155d5116f0
+                          type: string
+                        description:
+                          example: My account
+                          type: string
+                        verified:
+                          example: true
+                          type: boolean
+                        type:
+                          example: crypto_wallet
+                          type: string
+                          enum:
+                            - crypto_wallet
+                            - crypto_exchange
+                            - crypto_nft
+                        state:
+                          type: object
+                          properties:
+                            last_sync:
+                              type: string
+                              example: 2022-07-21T09:21:37.384496+00:00
+                              description: null if initial sync was not yet done
+                              nullable: true
+                  transactions:
+                    type: array
+                    items:
+                      title: Transaction
+                      description: Represents a transaction.
+                      type: object
+                      required:
+                        - account_id
+                        - transaction_id
+                        - type
+                        - amount
+                        - total
+                        - fee
+                        - created_at
+                        - inputs
+                        - outputs
+                      properties:
+                        account_id:
+                          type: string
+                          example: 0940bb4a-0940-11ed-9ed1-00155d5116f0
+                        transaction_id:
+                          type: string
+                          example: "0xf77c19d9333bb26fd9d6773a18a8b5fd145e2fbb514ff2879cb478e13e2f8c23"
+                        type:
+                          type: string
+                          example: crypto_wallet
+                          enum:
+                            - crypto_wallet
+                            - crypto_exchange
+                            - crypto_nft
+                        side:
+                          type: string
+                          example: some-side
+                        amount:
+                          type: array
+                          items:
+                            '$ref': '#/components/schemas/Amount'
+                        total:
+                          type: array
+                          items:
+                            '$ref': '#/components/schemas/Amount'
+                        fee:
+                          type: array
+                          items:
+                            '$ref': '#/components/schemas/Amount'
+                        created_at:
+                          type: string
+                          example: 2022-07-21T09:21:37.384496+00:00
+                        inputs:
+                          type: array
+                          items:
+                            '$ref': '#/components/schemas/Movement'
+                        outputs:
+                          type: array
+                          items:
+                            '$ref': '#/components/schemas/Movement'
+                required:
+                  - transactions
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: missing key in request header
+                    type: string
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Unauthorized
+                    type: string
+  #
+  # Account provider info
+  #
+  /v1/{account_provider}/connect:
+    get:
+      summary: Get account hint
+      operationId: GetAccountHint
+      tags:
+        - Account provider info
+      servers:
+        - description: Call
+          url: https://aisp-api.blockmate.io
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - description: URL value from account_providers method
+          in: path
+          name: account_provider
+          required: true
+          schema:
+            type: string
+            example: onchain/btc
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - description
+                  - url
+                  - intro
+                  - fields
+                  - oauth
+                properties:
+                  description:
+                    example: Bitcoin (BTC)
+                    type: string
+                  url:
+                    example: some-url
+                    type: string
+                  intro:
+                    example: Use your address to connect your account.
+                    type: string
+                  fields:
+                    type: object
+                    properties:
+                      description:
+                        type: string
+                        example: Account description
+                      wallet:
+                        type: string
+                        example: Address
+                    additionalProperties:
+                      type: string
+                  oauth:
+                    example: false
+                    type: boolean
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    example: Invalid token or expired token.
+                    type: string
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    example: not_found
+                    type: string
+    post:
+      summary: Connect new account
+      operationId: ConnectAccount
+      tags:
+        - Account provider info
+      servers:
+        - description: Call
+          url: https://aisp-api.blockmate.io
+      security:
+        - ProjectToken: [ ]
+      parameters:
+        - description: URL value from account_providers method
+          in: path
+          name: account_provider
+          required: true
+          schema:
+            type: string
+            example: onchain/btc
+      requestBody:
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet
+                - description
+              properties:
+                wallet:
+                  type: string
+                  example: "bc1qjl7k0dpcsw3djmzq25qv6peavgxysq95pcduuq"
+                description:
+                  type: string
+                  example: some-description
+      responses:
+        200:
+          description: User
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                  - name
+                  - description
+                  - verified
+                properties:
+                  id:
+                    type: string
+                    example: 163b6df1-dc0b-4086-8922-6068fe1e653d
+                  name:
+                    type: string
+                    example: some-name
+                  description:
+                    type: string
+                    example: some-description
+                  verified:
+                    type: boolean
+                    example: false
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Account wallet already connected.
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Invalid token or expired token.
+        405:
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Method Not Allowed
+  /v1/{account_provider}/account/{account_id}:
+    delete:
+      summary: Delete account
+      operationId: DeleteAccount
+      tags:
+        - Account provider info
+      servers:
+        - description: Call
+          url: https://aisp-api.blockmate.io
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - description: URL value from account_providers method
+          in: path
+          name: account_provider
+          required: true
+          schema:
+            type: string
+            example: onchain/btc
+        - description: Account ID
+          in: path
+          name: account_id
+          required: true
+          schema:
+            type: string
+            example: 163b6df1-dc0b-4086-8922-6068fe1e653d
+      responses:
+        200:
+          description: OK
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Invalid token or expired token.
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Not Found
+  #
+  # Risk info
+  #
+  /v1/risk/score:
+    get:
+      summary: Get address risk score
+      operationId: GetAddressRiskScore
+      tags:
+        - Risk info
+      servers:
+        - description: Call
+          url: https://risk-api.blockmate.io
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - name: address
+          in: query
+          description: Address for which risk should be returned
+          schema:
+            type: string
+            example: "bc1qjl7k0dpcsw3djmzq25qv6peavgxysq95pcduuq"
+        - name: chain
+          in: query
+          description: Blockchain identifier
+          schema:
+            type: string
+            example: btc
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  address:
+                    type: string
+                    example: "bc1qjl7k0dpcsw3djmzq25qv6peavgxysq95pcduuq"
+                  risk:
+                    type: integer
+                    example: 85
+                    minimum: 0
+                    maximum: 100
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: missing key in request header
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+  /v1/risk/score/details:
+    get:
+      summary: Get address risk score details
+      operationId: GetAddressRiskScoreDetails
+      tags:
+        - Risk info
+      servers:
+        - description: Call
+          url: https://risk-api.blockmate.io
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - name: address
+          in: query
+          description: Address for which risk should be returned
+          schema:
+            type: string
+            example: "bc1qjl7k0dpcsw3djmzq25qv6peavgxysq95pcduuq"
+        - name: chain
+          in: query
+          description: Blockchain identifier
+          schema:
+            type: string
+            example: btc
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/AddressRiskReport'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: missing key in request header
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+  /v1/risk/score/details/{case_id}:
+    get:
+      summary: Get address risk score case
+      operationId: GetAddressRiskScoreCase
+      tags:
+        - Risk info
+      servers:
+        - description: Call
+          url: https://risk-api.blockmate.io
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - description: Case identifier
+          in: path
+          name: case_id
+          required: true
+          schema:
+            type: string
+            example: 7c656013-5e9b-4c71-8322-6562c5a9b34c
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/AddressRiskReport'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: missing key in request header
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+  /v1/risk/transaction/score:
+    get:
+      summary: Get transaction risk score
+      operationId: GetTransactionRiskScore
+      tags:
+        - Risk info
+      servers:
+        - description: Call
+          url: https://risk-api.blockmate.io
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - name: transaction
+          in: query
+          description: Transaction hash for which risk should be returned
+          schema:
+            type: string
+            example: "0638e15482e9d0fdb08920666390a546f32dd6ab15ffc81ed97e67b73b0d7205"
+        - name: chain
+          in: query
+          description: Blockchain identifier
+          schema:
+            type: string
+            example: btc
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  address:
+                    type: string
+                    example: "0638e15482e9d0fdb08920666390a546f32dd6ab15ffc81ed97e67b73b0d7205"
+                  risk:
+                    type: integer
+                    example: 85
+                    minimum: 0
+                    maximum: 100
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: missing key in request header
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+  /v1/risk/transaction/score/details:
+    get:
+      summary: Get transaction risk score details
+      operationId: GetTransactionRiskScoreDetails
+      tags:
+        - Risk info
+      servers:
+        - description: Call
+          url: https://risk-api.blockmate.io
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - name: transaction
+          in: query
+          description: Transaction hash for which risk should be returned
+          schema:
+            type: string
+            example: "0638e15482e9d0fdb08920666390a546f32dd6ab15ffc81ed97e67b73b0d7205"
+        - name: chain
+          in: query
+          description: Blockchain identifier
+          schema:
+            type: string
+            example: btc
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/TransactionRiskReport'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: missing key in request header
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+  /v1/risk/transaction/score/details/{case_id}:
+    get:
+      summary: Get transaction risk score case
+      operationId: GetTransactionRiskScoreCase
+      tags:
+        - Risk info
+      servers:
+        - description: Call
+          url: https://risk-api.blockmate.io
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - description: Case identifier
+          in: path
+          name: case_id
+          required: true
+          schema:
+            type: string
+            example: 7149168f-ad69-4fc9-b027-a16b0ca13081
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/TransactionRiskReport'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: missing key in request header
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+  #
+  # Exchange rate info
+  #
+  /v1/exchangerate/current:
+    get:
+      summary: Get current exchange rate
+      operationId: GetCurrentExchangeRate
+      tags:
+        - Exchange rate info
+      servers:
+        - description: Call
+          url: https://data-api.blockmate.io
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - name: pairs
+          in: query
+          required: true
+          description: Currency pairs for which exchange rate should be returned
+          schema:
+            type: string
+            example: "ETH/USD,BTC/EUR"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  '$ref': '#/components/schemas/ExchangeRate'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: missing key in request header
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+  /v1/exchangerate/history:
+    get:
+      summary: Get historical exchange rate
+      operationId: GetHistoricalExchangeRate
+      tags:
+        - Exchange rate info
+      servers:
+        - description: Call
+          url: https://data-api.blockmate.io
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - name: pair
+          in: query
+          required: true
+          description: Currency pair for which exchange rates should be returned
+          schema:
+            type: string
+            example: "ETH/USD"
+        - name: days
+          in: query
+          required: true
+          description: Historical dates for which exchange rates should be returned
+          schema:
+            type: string
+            example: "2022-06-30,2022-06-29"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  '$ref': '#/components/schemas/ExchangeRate'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: missing key in request header
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+  #
+  # Address name info
+  #
+  /v1/addressname/simple:
+    get:
+      summary: Get address name and category info
+      operationId: GetAddressNameInfo
+      tags:
+        - Address name and category info
+      servers:
+        - description: Call
+          url: https://data-api.blockmate.io
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - name: address
+          in: query
+          required: true
+          description: Address for wich name and category should be returned
+          schema:
+            type: string
+            example: "bc1qjl7k0dpcsw3djmzq25qv6peavgxysq95pcduuq"
+        - name: chain
+          in: query
+          required: true
+          description: Blockchain identifier
+          schema:
+            type: string
+            example: btc
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: some-name
+                  category:
+                    type: string
+                    example: some-category
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: missing key in request header
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+
+components:
+  securitySchemes:
+    UserJWT:
+      description: User JWT Token
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ProjectJWT:
+      description: Project JWT Token
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ProjectToken:
+      description: Project Token used to manage users and to get JWT tokens used outside of Authentication API
+      type: apiKey
+      name: X-API-KEY
+      in: header
+  schemas:
+    User:
+      title: User
+      description: Represents a user
+      type: object
+      required:
+        - uuid
+        - name
+      properties:
+        uuid:
+          type: string
+          example: 4301140e-d639-11ec-9120-00155d03ab64
+        name:
+          type: string
+          example: some-name
+    AccountProvider:
+      title: Account Provider
+      description: Account provider
+      type: object
+      required:
+        - name
+        - type
+        - url
+      properties:
+        name:
+          type: string
+          example: btc
+        type:
+          type: string
+          example: crypto_wallet
+          enum:
+            - crypto_wallet
+            - crypto_exchange
+            - crypto_nft
+        url:
+          type: string
+          example: onchain/bitcoin
+    Amount:
+      title: Amount
+      description: Amount
+      type: object
+      required:
+        - value
+        - currency
+        - currency_name
+        - currency_symbol
+      properties:
+        value:
+          type: number
+          example: 1.2
+        currency:
+          type: string
+          example: "ETHEREUM:0xdAC17F958D2ee523a2206206994597C13D831ec7"
+        currency_name:
+          type: string
+          example: Tether USD
+        currency_symbol:
+          type: string
+          example: USDT
+        image_name:
+          type: string
+          example: Alvibop
+          nullable: true
+        image_url:
+          type: string
+          example: https://storage.googleapis.com/starly-prod.appspot.com/users/07SXODs3nHWOc0udxtCA7hU9KgR2/collections/pSYegq3aubUCodcy1t4u/cards/16/converted_cover1632338824700_600x800.mp4
+          nullable: true
+    Movement:
+      title: Movement
+      description: Movement
+      type: object
+      required:
+        - address
+        - currency
+        - currency_name
+        - currency_symbol
+        - value
+        - owned
+        - fee
+      properties:
+        address:
+          type: string
+          example: "0xc50e6db1637423819edbccb20b15654338d65501"
+        currency:
+          type: string
+          example: "ETHEREUM:0xdAC17F958D2ee523a2206206994597C13D831ec7"
+        currency_name:
+          type: string
+          example: Tether USD
+        currency_symbol:
+          type: string
+          example: USDT
+        value:
+          type: number
+          example: 1.2
+        owned:
+          type: boolean
+          example: true
+        fee:
+          type: boolean
+          example: false
+        image_name:
+          type: string
+          example: Alvibop
+          nullable: true
+        image_url:
+          type: string
+          example: https://storage.googleapis.com/starly-prod.appspot.com/users/07SXODs3nHWOc0udxtCA7hU9KgR2/collections/pSYegq3aubUCodcy1t4u/cards/16/converted_cover1632338824700_600x800.mp4
+          nullable: true
+          
+    AccountProviderHint:
+      title: Account Provider Hint
+      description: Account provider hint containing info about what is needed to connect such an account
+      type: object
+      required:
+        - account_name
+        - account_type
+        - account_url
+        - description
+        - url
+        - info
+        - fields
+        - oauth
+      properties:
+        account_name:
+          type: string
+          example: btc
+        account_type:
+          type: string
+          example: crypto_wallet
+          enum:
+            - crypto_wallet
+            - crypto_exchange
+            - crypto_nft
+        account_url:
+          type: string
+          example: onchain/btc
+        description:
+          type: string
+          example: Bitcoin (BTC)
+        url:
+          type: string
+          example: https://bitcoin.com
+        intro:
+          type: string
+          example: Use your address to connect your account.
+        fields:
+          type: object
+          properties:
+            api_key:
+              type: string
+              example: API Key
+            api_secret:
+              type: string
+              example: API Secret
+            api_passphrase:
+              type: string
+              example: API Passphrase
+            description:
+              type: string
+              example: Account description
+            wallet:
+              type: string
+              example: Address
+          additionalProperties:
+            type: string
+        oauth:
+          type: boolean
+          example: false
+    AddressRiskReport:
+      title: AddressRiskReport
+      description: AddressRiskReport
+      type: object
+      required:
+        - address
+        - chain
+        - risk
+        - details
+      properties:
+        case_id:
+          type: string
+          example: 7c656013-5e9b-4c71-8322-6562c5a9b34c
+        request_datetime:
+          type: string
+          example: 2022-10-04T12:32:44Z
+        response_datetime:
+          type: string
+          example: 2022-10-04T12:32:44Z
+        address:
+          type: string
+          example: "0xc50e6db1637423819edbccb20b15654338d65501"
+        chain:
+          type: string
+          example: eth
+        risk:
+          type: integer
+          example: 85
+          minimum: 0
+          maximum: 100
+        details:
+          type: object
+          properties:
+            own_categories:
+              type: array
+              items:
+                '$ref': '#/components/schemas/RiskReportCategory'
+            source_of_funds_categories:
+              type: array
+              items:
+                '$ref': '#/components/schemas/RiskReportCategory'
+    TransactionRiskReport:
+      title: TransactionRiskReport
+      description: TransactionRiskReport
+      type: object
+      required:
+        - address
+        - chain
+        - risk
+        - details
+      properties:
+        case_id:
+          type: string
+          example: 7149168f-ad69-4fc9-b027-a16b0ca13081
+        request_datetime:
+          type: string
+          example: 2022-10-04T12:32:44Z
+        response_datetime:
+          type: string
+          example: 2022-10-04T12:32:44Z
+        transaction:
+          type: string
+          example: "0638e15482e9d0fdb08920666390a546f32dd6ab15ffc81ed97e67b73b0d7205"
+        chain:
+          type: string
+          example: btc
+        risk:
+          type: integer
+          example: 85
+          minimum: 0
+          maximum: 100
+        details:
+          type: object
+          description: Keys are addresses from transaction inputs or outputs
+          additionalProperties:
+            type: object
+            properties:
+              own_categories:
+                type: array
+                items:
+                  '$ref': '#/components/schemas/RiskReportCategory'
+              source_of_funds_categories:
+                type: array
+                items:
+                  '$ref': '#/components/schemas/RiskReportCategory'
+    RiskReportCategory:
+      title: RiskReportCategory
+      description: RiskReportCategory
+      type: object
+      required:
+        - name
+        - category_name
+        - risk
+      properties:
+        adress:
+          type: string
+          example: "0xc50e6db1637423819edbccb20b15654338d65501"
+        name:
+          type: string
+          example: some-name
+        category_name:
+          type: string
+          example: some-category-name
+        risk:
+          type: integer
+          example: 85
+          minimum: 0
+          maximum: 100
+    ExchangeRate:
+      title: ExchangeRate
+      description: ExchangeRate
+      type: object
+      required:
+        - currency_pair
+        - date
+        - rate
+      properties:
+        currency_pair:
+          type: string
+          example: "ETH/USD"
+        date:
+          type: string
+          example: 2022-06-30
+        rate:
+          type: number
+          example: 1053.9613
+
+security:
+  - UserJWT: [ ]
+  - ProjectJWT: [ ]
+  - ProjectToken: [ ]
