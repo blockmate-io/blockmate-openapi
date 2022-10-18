@@ -89,7 +89,7 @@ function handleLanguage() {
 	if [[ "$language" == "csharp" ]]; then
 		generateCsharp "$relativePath"
 	elif [[ "$language" == "go" ]]; then
-		generateCsharp "$relativePath"
+		generateGo "$relativePath"
 	elif [[ "$language" == "java" ]]; then
 		generateJava "$relativePath"
 	elif [[ "$language" == "nodejs" ]]; then
