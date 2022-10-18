@@ -702,8 +702,6 @@ paths:
             example: 2020-01-01
           description: |
             Set time from which the transactions will be get.
-            The parameter is passed as-is to backend services.
-            The default value is 30 days before the actual date or 30 days before the date specified in "until" parameter.
         - name: until
           in: query
           schema:
@@ -713,8 +711,21 @@ paths:
             example: 2020-02-01
           description: |
             Set time to which the transactions will be get.
-            The parameter is passed as-is to backend services.
             The default value is the actual date.
+        - name: limit
+          in: query
+          schema:
+           type: number
+           example: 10
+          description: |
+            Limit the number of the transactions in the response.
+            Default page size is 50.
+        - name: cursor
+          in: query
+          schema:
+            type: string
+          description: |
+            Specify on requesting the next page. Use the `page_cursor` from the previous response.
         - name: currency
           in: query
           schema:
@@ -742,6 +753,9 @@ paths:
               schema:
                 type: object
                 properties:
+                  page_cursor:
+                    type: string
+                    description: Use this as `cursor` in the next request to get the next page. The `page_cursor` has a one hour validity.
                   accounts:
                     type: array
                     items:
