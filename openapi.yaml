@@ -869,6 +869,57 @@ paths:
                   message:
                     example: Unauthorized
                     type: string
+  /v1/aggregate/nft_metadata:
+    get:
+      summary: Get NFT metadata
+      operationId: NFTMetadata
+      servers:
+        - description: Call
+          url: https://aisp-api.blockmate.io
+      security:
+        - UserJWT: [ ]
+      tags:
+        - Aggregated info
+      responses:
+        200:
+          description: Get NFT metadata.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    ownedNfts:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/OwnedNft'
+                    totalCount:
+                      type: string
+                      description: 'String - Total number of NFTs owned by the given address.'
+                    blockHash:
+                      type: string
+                      description: 'String - The canonical head block hash of when your request was received'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: missing key in request header
+                    type: string
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: Unauthorized
+                    type: string
   #
   # Account provider info
   #
@@ -1759,6 +1810,159 @@ components:
         oauth:
           type: boolean
           example: false
+    OwnedNft:
+      title: OwnedNft
+      description: OwnedNft
+      type: object
+      properties:
+        contract:
+          description: 'Object - Contract for returned NFT'
+          type: object
+          properties:
+            address:
+              type: string
+              description: 'String - Address of NFT contract.'
+        id:
+          $ref: '#/components/schemas/NftId'
+        balance:
+          type: string
+          description: 'String - Token balance'
+        title:
+          type: string
+          description: 'String - Name of the NFT asset.'
+        description:
+          type: string
+          description: 'String - Brief human-readable description'
+        tokenUri:
+          $ref: '#/components/schemas/NftTokenUri'
+        media:
+          type: object
+          properties:
+            raw:
+              $ref: '#/components/schemas/NftRaw'
+            gateway:
+              $ref: '#/components/schemas/NftGateway'
+            thumbnail:
+              type: string
+              description: URL for a resized thumbnail of the NFT media asset.
+            format:
+              type: string
+              description: The media format (jpg, gif, png, etc.) of the gateway and thumbnail assets.
+            bytes:
+              type: integer
+              description: The size of the media asset in bytes.
+        metadata:
+          $ref: '#/components/schemas/metadata'
+        timeLastUpdated:
+          type: string
+          description: 'String - ISO timestamp of the last cache refresh for the information returned in the metadata field.'
+        error:
+          type: string
+          description: 'String - A string describing a particular reason that we were unable to fetch complete metadata for the NFT.'
+        contractMetadata:
+          $ref: '#/components/schemas/NftContractMetadata'
+        spamInfo:
+          $ref: '#/components/schemas/NftSpamInfo'
+    NftTokenType:
+      type: string
+      description: "String - 'ERC721' or 'ERC1155'"
+    NftRaw:
+      type: string
+      description: "String - Uri representing the location of the NFT's original metadata blob. This is a backup for you to parse when the metadata field is not automatically populated."
+    NftGateway:
+      type: string
+      description: 'String - Public gateway uri for the raw uri above.'
+    NftId:
+      type: object
+      properties:
+        tokenId:
+          type: string
+          description: String - The ID of the token. Can be in hex or decimal format.
+        tokenMetadata:
+          type: object
+          properties:
+            tokenType:
+              $ref: '#/components/schemas/NftTokenType'
+    NftTokenUri:
+      type: object
+      properties:
+        raw:
+          $ref: '#/components/schemas/NftRaw'
+        gateway:
+          $ref: '#/components/schemas/NftGateway'
+    metadata:
+      type: object
+      description: 'String - Relevant metadata for NFT contract. This is useful for viewing image url, traits, etc. without having to follow the metadata url in tokenUri to parse manually.'
+      properties:
+        image:
+          type: string
+          description: 'String - URL to the NFT asset image. Can be standard URLs pointing to images on conventional servers, IPFS, or Arweave. Most types of images (SVGs, PNGs, JPEGs, etc.) are supported by NFT marketplaces.'
+        external_url:
+          type: string
+          description: 'String - The image URL that appears alongside the asset image on NFT platforms.'
+        background_color:
+          type: string
+          description: 'String - Background color of the NFT item. Usually must be defined as a six-character hexadecimal.'
+        name:
+          type: string
+          description: 'String - Name of the NFT asset.'
+        description:
+          type: string
+          description: 'String - Human-readable description of the NFT asset. (Markdown is supported/rendered on OpenSea and other NFT platforms)'
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              value:
+                type: string
+              trait_type:
+                type: string
+          description: 'Object - Traits/attributes/characteristics for each NFT asset.'
+        media:
+          $ref: '#/components/schemas/NftMedia'
+    NftMedia:
+      type: object
+      properties:
+        raw:
+          $ref: '#/components/schemas/NftRaw'
+        gateway:
+          $ref: '#/components/schemas/NftGateway'
+        thumbnail:
+          type: string
+          description: URL for a resized thumbnail of the NFT media asset.
+        format:
+          type: string
+          description: The media format (jpg, gif, png, etc.) of the gateway and thumbnail assets.
+        bytes:
+          type: integer
+          description: The size of the media asset in bytes.
+    NftContractMetadata:
+      type: object
+      properties:
+        name:
+          type: string
+          description: 'String - NFT contract name.'
+        symbol:
+          type: string
+          description: 'String - NFT contract symbol abbreviation.'
+        totalSupply:
+          type: string
+          description: 'String - Total number of NFTs in a given NFT collection.'
+        tokenType:
+          $ref: '#/components/schemas/NftTokenType'
+    NftSpamInfo:
+      type: object
+      description: 'Information about whether and why a contract was marked as spam.'
+      properties:
+        isSpam:
+          type: string
+          description: '"true" if contract is spam, else "false"'
+        classifications:
+          description: 'List of reasons why a contract was classified as spam.'
+          type: array
+          items:
+            type: string
     AddressRiskReport:
       title: AddressRiskReport
       description: AddressRiskReport
