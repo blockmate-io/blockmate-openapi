@@ -106,11 +106,15 @@ function handleLanguage() {
 
     if [[ "$dryRun" == "false" ]]; then
         cd "$relativePath/blockmate-$language"
-        git add .
-        git commit -m "$commitMessage"
-        git push
+        handleGitOperations
         cd "$pwd"
     fi
+}
+
+function handleGitOperations() {
+    git add .
+    git commit -m "$commitMessage"
+    git push
 }
 
 function usage() {
@@ -124,8 +128,8 @@ function usage() {
 }
 
 while [[ "$#" -gt 0 ]]; do case $1 in
-     -r|--relative-path) relativePath="$2"; shift;shift;;
-     -m|--commit-message) commitMessage="$2";shift;shift;;
+    -r|--relative-path) relativePath="$2"; shift;shift;;
+    -m|--commit-message) commitMessage="$2";shift;shift;;
     -d|--dry-run) dryRun="$2";shift;shift;;
     *) usage;;
 esac; done
@@ -153,3 +157,8 @@ handleLanguage "$relativePath" "$commitMessage" "$dryRun" "nodejs"
 handleLanguage "$relativePath" "$commitMessage" "$dryRun" "php"
 handleLanguage "$relativePath" "$commitMessage" "$dryRun" "python"
 handleLanguage "$relativePath" "$commitMessage" "$dryRun" "ruby"
+
+# commit and push also changes in this repository
+if [[ "$dryRun" == "false" ]]; then
+    handleGitOperations
+fi
