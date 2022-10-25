@@ -5,6 +5,10 @@ info:
   termsOfService: https://www.blockmate.io/term/terms-and-conditions
   version: '0.0.1'
 
+servers:
+- description: Blockmate API
+  url: https://api.blockmate.io
+
 paths:
   #
   # Authentication
@@ -15,9 +19,6 @@ paths:
       operationId: UserAPI-AuthenticateProject
       tags:
         - Authentication
-      servers:
-        - description: Authentication
-          url: https://auth.blockmate.io
       security:
         - ProjectToken: [ ]
       responses:
@@ -59,9 +60,6 @@ paths:
       operationId: UserAPI-AuthenticateDeveloper
       tags:
         - Authentication
-      servers:
-        - description: Authentication
-          url: https://auth.blockmate.io
       security:
         - ProjectToken: [ ]
       responses:
@@ -106,9 +104,6 @@ paths:
       operationId: ListUsers
       tags:
         - User management
-      servers:
-        - description: Authentication
-          url: https://auth.blockmate.io
       security:
         - ProjectToken: [ ]
       responses:
@@ -145,9 +140,6 @@ paths:
       operationId: CreateUser
       tags:
         - User management
-      servers:
-        - description: Authentication
-          url: https://auth.blockmate.io
       security:
         - ProjectToken: [ ]
       requestBody:
@@ -193,9 +185,6 @@ paths:
       operationId: GetUser
       tags:
         - User management
-      servers:
-        - description: Authentication
-          url: https://auth.blockmate.io
       security:
         - ProjectToken: [ ]
       parameters:
@@ -247,9 +236,6 @@ paths:
       operationId: UpdateUser
       tags:
         - User management
-      servers:
-        - description: Authentication
-          url: https://auth.blockmate.io
       security:
         - ProjectToken: [ ]
       parameters:
@@ -311,9 +297,6 @@ paths:
       operationId: DeleteUser
       tags:
         - User management
-      servers:
-        - description: Authentication
-          url: https://auth.blockmate.io
       security:
         - ProjectToken: [ ]
       parameters:
@@ -371,9 +354,6 @@ paths:
       operationId: AuthUser
       tags:
         - User management
-      servers:
-        - description: Authentication
-          url: https://auth.blockmate.io
       security:
         - ProjectToken: [ ]
       parameters:
@@ -433,9 +413,6 @@ paths:
     get:
       summary: Get list of account providers
       operationId: AccountProvidersList
-      servers:
-        - description: Call
-          url: https://aisp-api.blockmate.io
       security:
         - UserJWT: [ ]
       tags:
@@ -471,9 +448,6 @@ paths:
     get:
       summary: Get list of account providers hints
       operationId: AccountProviderHintsList
-      servers:
-        - description: Call
-          url: https://aisp-api.blockmate.io
       security:
         - UserJWT: [ ]
       tags:
@@ -509,9 +483,6 @@ paths:
     get:
       summary: List accounts
       operationId: Accounts
-      servers:
-        - description: Call
-          url: https://aisp-api.blockmate.io
       security:
         - UserJWT: [ ]
       tags:
@@ -589,9 +560,6 @@ paths:
             example: USD
           description: |
             Currency to convert to.
-      servers:
-        - description: Call
-          url: https://aisp-api.blockmate.io
       security:
         - UserJWT: [ ]
       tags:
@@ -689,9 +657,6 @@ paths:
     get:
       summary: Get transactions
       operationId: Transactions
-      servers:
-        - description: Call
-          url: https://aisp-api.blockmate.io
       parameters:
         - name: since
           in: query
@@ -873,9 +838,6 @@ paths:
     get:
       summary: Get NFT metadata
       operationId: NFTMetadata
-      servers:
-        - description: Call
-          url: https://aisp-api.blockmate.io
       security:
         - UserJWT: [ ]
       tags:
@@ -929,9 +891,6 @@ paths:
       operationId: GetAccountHint
       tags:
         - Account provider info
-      servers:
-        - description: Call
-          url: https://aisp-api.blockmate.io
       security:
         - UserJWT: [ ]
       parameters:
@@ -1004,9 +963,6 @@ paths:
       operationId: ConnectAccount
       tags:
         - Account provider info
-      servers:
-        - description: Call
-          url: https://aisp-api.blockmate.io
       security:
         - ProjectToken: [ ]
       parameters:
@@ -1094,9 +1050,6 @@ paths:
       operationId: DeleteAccount
       tags:
         - Account provider info
-      servers:
-        - description: Call
-          url: https://aisp-api.blockmate.io
       security:
         - UserJWT: [ ]
       parameters:
@@ -1146,9 +1099,6 @@ paths:
       operationId: GetAddressRiskScore
       tags:
         - Risk info
-      servers:
-        - description: Call
-          url: https://risk-api.blockmate.io
       security:
         - UserJWT: [ ]
       parameters:
@@ -1206,9 +1156,6 @@ paths:
       operationId: GetAddressRiskScoreDetails
       tags:
         - Risk info
-      servers:
-        - description: Call
-          url: https://risk-api.blockmate.io
       security:
         - UserJWT: [ ]
       parameters:
@@ -1257,9 +1204,6 @@ paths:
       operationId: GetAddressRiskScoreCase
       tags:
         - Risk info
-      servers:
-        - description: Call
-          url: https://risk-api.blockmate.io
       security:
         - UserJWT: [ ]
       parameters:
@@ -1303,9 +1247,6 @@ paths:
       operationId: GetTransactionRiskScore
       tags:
         - Risk info
-      servers:
-        - description: Call
-          url: https://risk-api.blockmate.io
       security:
         - UserJWT: [ ]
       parameters:
@@ -1363,9 +1304,6 @@ paths:
       operationId: GetTransactionRiskScoreDetails
       tags:
         - Risk info
-      servers:
-        - description: Call
-          url: https://risk-api.blockmate.io
       security:
         - UserJWT: [ ]
       parameters:
@@ -1414,9 +1352,6 @@ paths:
       operationId: GetTransactionRiskScoreCase
       tags:
         - Risk info
-      servers:
-        - description: Call
-          url: https://risk-api.blockmate.io
       security:
         - UserJWT: [ ]
       parameters:
@@ -1463,9 +1398,6 @@ paths:
       operationId: GetCurrentExchangeRate
       tags:
         - Exchange rate info
-      servers:
-        - description: Call
-          url: https://data-api.blockmate.io
       security:
         - UserJWT: [ ]
       parameters:
@@ -1511,9 +1443,6 @@ paths:
       operationId: GetHistoricalExchangeRate
       tags:
         - Exchange rate info
-      servers:
-        - description: Call
-          url: https://data-api.blockmate.io
       security:
         - UserJWT: [ ]
       parameters:
@@ -1569,9 +1498,6 @@ paths:
       operationId: GetAddressNameInfo
       tags:
         - Address name and category info
-      servers:
-        - description: Call
-          url: https://data-api.blockmate.io
       security:
         - UserJWT: [ ]
       parameters:
