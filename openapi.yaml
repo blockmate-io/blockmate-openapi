@@ -1490,12 +1490,12 @@ paths:
                     type: string
                     example: Unauthorized
   #
-  # Address name info
+  # Address name info simple
   #
   /v1/addressname/simple:
     get:
-      summary: Get address name and category info
-      operationId: GetAddressNameInfo
+      summary: Get address name and category info for single address
+      operationId: GetAddressNameInfoSingle
       tags:
         - Address name and category info
       security:
@@ -1529,6 +1529,69 @@ paths:
                   category:
                     type: string
                     example: some-category
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: missing key in request header
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+  #
+  # Address name info multi
+  #
+  /v1/addressname/multi:
+    post:
+      summary: Get address name and category info for multiple addresses
+      operationId: GetAddressNameInfoMulti
+      tags:
+        - Address name and category info
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - name: chain
+          in: query
+          required: true
+          description: Blockchain identifier
+          schema:
+            type: string
+            example: btc
+      requestBody:
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                example: "bc1qjl7k0dpcsw3djmzq25qv6peavgxysq95pcduuq"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: some-name
+                    category:
+                      type: string
+                      example: some-category
         400:
           description: Bad Request
           content:
