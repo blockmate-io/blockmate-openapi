@@ -1490,7 +1490,7 @@ paths:
                     type: string
                     example: Unauthorized
   #
-  # Address name info simple
+  # Address name info
   #
   /v1/addressname/simple:
     get:
@@ -1504,7 +1504,7 @@ paths:
         - name: address
           in: query
           required: true
-          description: Address for wich name and category should be returned
+          description: Address for which name and category should be returned
           schema:
             type: string
             example: "bc1qjl7k0dpcsw3djmzq25qv6peavgxysq95pcduuq"
@@ -1549,9 +1549,6 @@ paths:
                   message:
                     type: string
                     example: Unauthorized
-  #
-  # Address name info multi
-  #
   /v1/addressname/multi:
     post:
       summary: Get address name and category info for multiple addresses
@@ -1592,6 +1589,152 @@ paths:
                     category:
                       type: string
                       example: some-category
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: missing key in request header
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+  #
+  # ENS domains and addresses
+  #
+  /v1/ens/addressFromDomain:
+    get:
+      summary: Get address for specified ENS domain
+      operationId: GetAddressFromDomain
+      tags:
+        - ENS
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - name: domain
+          in: query
+          required: true
+          description: ENS domain for which Ethereum address should be returned
+          schema:
+            type: string
+            example: "alice.eth"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  address:
+                    type: string
+                    example: "0xcd2e72aebe2a203b84f46deec948e6465db51c75"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: missing key in request header
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+  /v1/ens/domainFromAddress:
+    get:
+      summary: Get domain and metadata for specified ENS address
+      operationId: GetDomainFromAddress
+      tags:
+        - ENS
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - name: address
+          in: query
+          required: true
+          description: Ethereum address for which domain and metadata should be returned
+          schema:
+            type: string
+            example: "0xcd2e72aebe2a203b84f46deec948e6465db51c75"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  domain:
+                    type: string
+                    example: "alice.eth"
+                  metadata:
+                    type: object
+                    properties:
+                      attributes:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            display_type:
+                              type: string
+                              example: "date"
+                            trait_type:
+                              type: string
+                              example: "Created Date"
+                            value:
+                              oneOf:
+                                - type: string
+                                - type: integer
+                              example: 1571297811000
+                      background_image:
+                        type: string
+                        example: "https://metadata.ens.domains/mainnet/avatar/alice.eth"
+                      description:
+                        type: string
+                        example: "alice.eth, an ENS name."
+                      image:
+                        type: string
+                        example: "https://metadata.ens.domains/mainnet/0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85/0x9c0257114eb9399a2985f8e75dad7600c5d89fe3824ffa99ec1c3eb8bf3b0501/image"
+                      image_url:
+                        type: string
+                        example: "https://metadata.ens.domains/mainnet/0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85/0x9c0257114eb9399a2985f8e75dad7600c5d89fe3824ffa99ec1c3eb8bf3b0501/image"
+                      is_normalized:
+                        type: boolean
+                        example: true
+                      name:
+                        type: string
+                        example: "alice.eth"
+                      name_length:
+                        type: integer
+                        example: 5
+                      segment_length:
+                        type: integer
+                        example: 5
+                      url:
+                        type: string
+                        example: "https://app.ens.domains/name/alice.eth"
+                      version:
+                        type: integer
+                        example: 0
         400:
           description: Bad Request
           content:
