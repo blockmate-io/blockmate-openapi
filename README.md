@@ -43,7 +43,7 @@ openapi-generator-cli generate \
 -g java \
 -i openapi.yaml \
 -o blockmate-java \
--p "groupId=io.blockmate,artifactId=blockmate,apiPackage=io.blockmate.client.request,modelPackage=io.blockmate.client.model,dateLibrary=java8,hideGenerationTimestamp=true" \
+-p "groupId=io.blockmate,artifactId=blockmate,apiPackage=io.blockmate.client.request,modelPackage=io.blockmate.client.model,dateLibrary=java8,hideGenerationTimestamp=true,openApiNullable=false" \
 --library=retrofit2 \
 --global-property "apiDocs=false,modelDocs=false,apiTests=false,modelTests=false" \
 --type-mappings=BigDecimal=Double

@@ -1762,7 +1762,7 @@ paths:
     get:
       summary: Get analytics focused on gaming
       operationId: GetAnalytics
-      description: Get analytics focused on gaming. All empty values are omitted from the response.
+      description: Get analytics focused on gaming. All empty values are omitted from the response. Values are recalculated once per day.
       tags:
         - Analytics
       security:
@@ -2449,6 +2449,8 @@ paths:
                     type: string
                     example: "2021-10-10T11:11:16Z"
                     description: Time when last OUT gambling transaction occurred
+        204:
+          description: No Content (happens when account is connected, but values were not recalculated yet)
         400:
           description: Bad Request
           content:
