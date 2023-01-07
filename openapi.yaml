@@ -3,7 +3,7 @@ info:
   title: Blockmate
   description: Blockmate API OpenAPI documentation
   termsOfService: https://www.blockmate.io/term/terms-and-conditions
-  version: '0.0.1'
+  version: '0.0.2'
 
 servers:
 - description: Blockmate API
@@ -407,6 +407,217 @@ paths:
                     type: string
                     example: Not Found
   #
+  # User account management
+  #
+  /v1/{account_provider}/connect:
+    get:
+      summary: Get account hint
+      operationId: GetAccountHint
+      tags:
+        - User account management
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - description: URL value from account_providers method
+          in: path
+          name: account_provider
+          required: true
+          schema:
+            type: string
+            example: onchain/btc
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - description
+                  - url
+                  - intro
+                  - fields
+                  - oauth
+                properties:
+                  description:
+                    example: Bitcoin (BTC)
+                    type: string
+                  url:
+                    example: some-url
+                    type: string
+                  intro:
+                    example: Use your address to connect your account.
+                    type: string
+                  fields:
+                    type: object
+                    properties:
+                      description:
+                        type: string
+                        example: Account description
+                      wallet:
+                        type: string
+                        example: Address
+                    additionalProperties:
+                      type: string
+                  oauth:
+                    example: false
+                    type: boolean
+                  icon:
+                    type: string
+                    example: https://api.blockmate.io/v1/onchain/static/bitcoin.png
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    example: Invalid token or expired token.
+                    type: string
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    example: not_found
+                    type: string
+    post:
+      summary: Connect new account
+      operationId: ConnectAccount
+      tags:
+        - User account management
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - description: URL value from account_providers method
+          in: path
+          name: account_provider
+          required: true
+          schema:
+            type: string
+            example: onchain/btc
+      requestBody:
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet
+                - description
+              properties:
+                wallet:
+                  type: string
+                  example: "bc1qjl7k0dpcsw3djmzq25qv6peavgxysq95pcduuq"
+                description:
+                  type: string
+                  example: some-description
+      responses:
+        200:
+          description: User
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                  - name
+                  - description
+                  - verified
+                properties:
+                  id:
+                    type: string
+                    example: 163b6df1-dc0b-4086-8922-6068fe1e653d
+                  name:
+                    type: string
+                    example: some-name
+                  description:
+                    type: string
+                    example: some-description
+                  verified:
+                    type: boolean
+                    example: false
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Account wallet already connected.
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Invalid token or expired token.
+        405:
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Method Not Allowed
+  /v1/{account_provider}/account/{account_id}:
+    delete:
+      summary: Delete account
+      operationId: DeleteAccount
+      tags:
+        - User account management
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - description: URL value from account_providers method
+          in: path
+          name: account_provider
+          required: true
+          schema:
+            type: string
+            example: onchain/btc
+        - description: Account ID
+          in: path
+          name: account_id
+          required: true
+          schema:
+            type: string
+            example: 163b6df1-dc0b-4086-8922-6068fe1e653d
+      responses:
+        200:
+          description: OK
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Invalid token or expired token.
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Not Found
+  #
   # Aggregated info
   #
   /v1/aggregate/account_providers:
@@ -423,7 +634,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AccountProvider"
+                type: array
+                items:
+                  $ref: "#/components/schemas/AccountProvider"
         400:
           description: Bad Request
           content:
@@ -458,7 +671,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AccountProviderHint"
+                type: array
+                items:
+                  $ref: "#/components/schemas/AccountProviderHint"
         400:
           description: Bad Request
           content:
@@ -560,13 +775,21 @@ paths:
             example: USD
           description: |
             Currency to convert to.
+        - name: account-filter
+          in: query
+          schema:
+            type: string
+            example: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+          description: |
+            Filter results to only provided account.
+            When omitted, it returns all transactions from all accounts.
       security:
         - UserJWT: [ ]
       tags:
         - Aggregated info
       responses:
         200:
-          description: Cumulated balance fo user accounts.
+          description: Cumulated balance for user accounts.
           content:
             application/json:
               schema:
@@ -851,6 +1074,7 @@ paths:
                 type: object
                 additionalProperties:
                   type: object
+                  description: The response format is depentent on a third-party, so it can change in the future.
                   properties:
                     ownedNfts:
                       type: array
@@ -883,214 +1107,6 @@ paths:
                     example: Unauthorized
                     type: string
   #
-  # Account provider info
-  #
-  /v1/{account_provider}/connect:
-    get:
-      summary: Get account hint
-      operationId: GetAccountHint
-      tags:
-        - Account provider info
-      security:
-        - UserJWT: [ ]
-      parameters:
-        - description: URL value from account_providers method
-          in: path
-          name: account_provider
-          required: true
-          schema:
-            type: string
-            example: onchain/btc
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - description
-                  - url
-                  - intro
-                  - fields
-                  - oauth
-                properties:
-                  description:
-                    example: Bitcoin (BTC)
-                    type: string
-                  url:
-                    example: some-url
-                    type: string
-                  intro:
-                    example: Use your address to connect your account.
-                    type: string
-                  fields:
-                    type: object
-                    properties:
-                      description:
-                        type: string
-                        example: Account description
-                      wallet:
-                        type: string
-                        example: Address
-                    additionalProperties:
-                      type: string
-                  oauth:
-                    example: false
-                    type: boolean
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  detail:
-                    example: Invalid token or expired token.
-                    type: string
-        404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    example: not_found
-                    type: string
-    post:
-      summary: Connect new account
-      operationId: ConnectAccount
-      tags:
-        - Account provider info
-      security:
-        - ProjectToken: [ ]
-      parameters:
-        - description: URL value from account_providers method
-          in: path
-          name: account_provider
-          required: true
-          schema:
-            type: string
-            example: onchain/btc
-      requestBody:
-        description: OK
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - wallet
-                - description
-              properties:
-                wallet:
-                  type: string
-                  example: "bc1qjl7k0dpcsw3djmzq25qv6peavgxysq95pcduuq"
-                description:
-                  type: string
-                  example: some-description
-      responses:
-        200:
-          description: User
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - id
-                  - name
-                  - description
-                  - verified
-                properties:
-                  id:
-                    type: string
-                    example: 163b6df1-dc0b-4086-8922-6068fe1e653d
-                  name:
-                    type: string
-                    example: some-name
-                  description:
-                    type: string
-                    example: some-description
-                  verified:
-                    type: boolean
-                    example: false
-        400:
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  detail:
-                    type: string
-                    example: Account wallet already connected.
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  detail:
-                    type: string
-                    example: Invalid token or expired token.
-        405:
-          description: Method Not Allowed
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  detail:
-                    type: string
-                    example: Method Not Allowed
-  /v1/{account_provider}/account/{account_id}:
-    delete:
-      summary: Delete account
-      operationId: DeleteAccount
-      tags:
-        - Account provider info
-      security:
-        - UserJWT: [ ]
-      parameters:
-        - description: URL value from account_providers method
-          in: path
-          name: account_provider
-          required: true
-          schema:
-            type: string
-            example: onchain/btc
-        - description: Account ID
-          in: path
-          name: account_id
-          required: true
-          schema:
-            type: string
-            example: 163b6df1-dc0b-4086-8922-6068fe1e653d
-      responses:
-        200:
-          description: OK
-        403:
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  detail:
-                    type: string
-                    example: Invalid token or expired token.
-        404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  detail:
-                    type: string
-                    example: Not Found
-  #
   # Risk info
   #
   /v1/risk/score:
@@ -1101,6 +1117,7 @@ paths:
         - Risk info
       security:
         - UserJWT: [ ]
+        - ProjectJWT: [ ]
       parameters:
         - name: address
           in: query
@@ -1150,6 +1167,63 @@ paths:
                   message:
                     type: string
                     example: Unauthorized
+    post:
+      summary: Get multiple risk scores for addresses
+      operationId: GetMultipleAddressRiskScore
+      tags:
+        - Risk info
+      security:
+        - UserJWT: [ ]
+        - ProjectJWT: [ ]
+      parameters:
+        - name: chain
+          in: query
+          description: Blockchain identifier
+          schema:
+            type: string
+            example: btc
+      requestBody:
+        description: Addresses for which risk should be returned (maximum of 5000 in one request)
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                example: "bc1qjl7k0dpcsw3djmzq25qv6peavgxysq95pcduuq"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  x-additionalPropertiesName: address
+                  type: integer
+                  description: risk
+                example:
+                  bc1qjl7k0dpcsw3djmzq25qv6peavgxysq95pcduuq: 10
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: missing key in request header
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
   /v1/risk/score/details:
     get:
       summary: Get address risk score details
@@ -1158,6 +1232,7 @@ paths:
         - Risk info
       security:
         - UserJWT: [ ]
+        - ProjectJWT: [ ]
       parameters:
         - name: address
           in: query
@@ -1206,6 +1281,7 @@ paths:
         - Risk info
       security:
         - UserJWT: [ ]
+        - ProjectJWT: [ ]
       parameters:
         - description: Case identifier
           in: path
@@ -1241,6 +1317,8 @@ paths:
                   message:
                     type: string
                     example: Unauthorized
+        404:
+          description: Not found
   /v1/risk/transaction/score:
     get:
       summary: Get transaction risk score
@@ -1249,6 +1327,7 @@ paths:
         - Risk info
       security:
         - UserJWT: [ ]
+        - ProjectJWT: [ ]
       parameters:
         - name: transaction
           in: query
@@ -1270,7 +1349,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  address:
+                  transaction:
                     type: string
                     example: "0638e15482e9d0fdb08920666390a546f32dd6ab15ffc81ed97e67b73b0d7205"
                   risk:
@@ -1306,6 +1385,7 @@ paths:
         - Risk info
       security:
         - UserJWT: [ ]
+        - ProjectJWT: [ ]
       parameters:
         - name: transaction
           in: query
@@ -1354,6 +1434,7 @@ paths:
         - Risk info
       security:
         - UserJWT: [ ]
+        - ProjectJWT: [ ]
       parameters:
         - description: Case identifier
           in: path
@@ -1400,11 +1481,12 @@ paths:
         - Exchange rate info
       security:
         - UserJWT: [ ]
+        - ProjectJWT: [ ]
       parameters:
         - name: pairs
           in: query
           required: true
-          description: Currency pairs for which exchange rate should be returned
+          description: Currency pairs for which exchange rate should be returned (max 20 per request)
           schema:
             type: string
             example: "ETH/USD,BTC/EUR"
@@ -1445,6 +1527,7 @@ paths:
         - Exchange rate info
       security:
         - UserJWT: [ ]
+        - ProjectJWT: [ ]
       parameters:
         - name: pair
           in: query
@@ -1456,7 +1539,7 @@ paths:
         - name: days
           in: query
           required: true
-          description: Historical dates for which exchange rates should be returned
+          description: Historical dates for which exchange rates should be returned (max 40 per request)
           schema:
             type: string
             example: "2022-06-30,2022-06-29"
@@ -1500,6 +1583,7 @@ paths:
         - Address name and category info
       security:
         - UserJWT: [ ]
+        - ProjectJWT: [ ]
       parameters:
         - name: address
           in: query
@@ -1557,6 +1641,7 @@ paths:
         - Address name and category info
       security:
         - UserJWT: [ ]
+        - ProjectJWT: [ ]
       parameters:
         - name: chain
           in: query
@@ -1566,7 +1651,7 @@ paths:
             type: string
             example: btc
       requestBody:
-        description: OK
+        description: Addresses for which name and category should be returned (maximum of 5000 in one request)
         content:
           application/json:
             schema:
@@ -1581,6 +1666,7 @@ paths:
             application/json:
               schema:
                 additionalProperties:
+                  x-additionalPropertiesName: address
                   type: object
                   properties:
                     name:
@@ -1620,6 +1706,7 @@ paths:
         - ENS
       security:
         - UserJWT: [ ]
+        - ProjectJWT: [ ]
       parameters:
         - name: domain
           in: query
@@ -1667,6 +1754,7 @@ paths:
         - ENS
       security:
         - UserJWT: [ ]
+        - ProjectJWT: [ ]
       parameters:
         - name: address
           in: query
@@ -1687,6 +1775,7 @@ paths:
                     type: string
                     example: "alice.eth"
                   metadata:
+                    description: The response format is depentent on a third-party, so it can change in the future.
                     type: object
                     properties:
                       attributes:
@@ -1767,6 +1856,7 @@ paths:
         - Analytics
       security:
         - UserJWT: [ ]
+        - ProjectJWT: [ ]
       responses:
         200:
           description: OK
@@ -2024,6 +2114,12 @@ components:
           type: string
           example: https://storage.googleapis.com/starly-prod.appspot.com/users/07SXODs3nHWOc0udxtCA7hU9KgR2/collections/pSYegq3aubUCodcy1t4u/cards/16/converted_cover1632338824700_600x800.mp4
           nullable: true
+        converted_currency:
+          type: string
+          example: USD
+        converted_value:
+          type: number
+          example: 1.2
     Movement:
       title: Movement
       description: Movement
@@ -2066,7 +2162,19 @@ components:
           type: string
           example: https://storage.googleapis.com/starly-prod.appspot.com/users/07SXODs3nHWOc0udxtCA7hU9KgR2/collections/pSYegq3aubUCodcy1t4u/cards/16/converted_cover1632338824700_600x800.mp4
           nullable: true
-          
+        converted_currency:
+          type: string
+          example: USD
+        converted_value:
+          type: number
+          example: 1.2
+        name:
+          type: string
+          description: name if known
+        category:
+          type: string
+          description: category if known
+          example: exchange
     AccountProviderHint:
       title: Account Provider Hint
       description: Account provider hint containing info about what is needed to connect such an account
@@ -2080,6 +2188,7 @@ components:
         - info
         - fields
         - oauth
+        - icon
       properties:
         account_name:
           type: string
@@ -2126,6 +2235,9 @@ components:
         oauth:
           type: boolean
           example: false
+        icon:
+          type: string
+          example: https://api.blockmate.io/v1/onchain/static/bitcoin.png
     OwnedNft:
       title: OwnedNft
       description: OwnedNft
@@ -2354,6 +2466,7 @@ components:
           type: object
           description: Keys are addresses from transaction inputs or outputs
           additionalProperties:
+            x-additionalPropertiesName: address
             type: object
             properties:
               own_categories:
@@ -2398,7 +2511,7 @@ components:
       properties:
         currency_pair:
           type: string
-          example: "ETH/USD"
+          example: "eth/usd"
         date:
           type: string
           example: 2022-06-30
