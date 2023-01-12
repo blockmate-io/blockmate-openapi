@@ -1074,7 +1074,7 @@ paths:
                 type: object
                 additionalProperties:
                   type: object
-                  description: The response format is depentent on a third-party, so it can change in the future.
+                  description: The response format is dependent on a third-party, so it can change in the future.
                   properties:
                     ownedNfts:
                       type: array
@@ -1775,7 +1775,7 @@ paths:
                     type: string
                     example: "alice.eth"
                   metadata:
-                    description: The response format is depentent on a third-party, so it can change in the future.
+                    description: The response format is dependent on a third-party, so it can change in the future.
                     type: object
                     properties:
                       attributes:
