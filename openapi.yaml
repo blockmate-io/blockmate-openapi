@@ -3087,101 +3087,101 @@ components:
           example: 1
           description: OUT gambling transactions count during last week
         first_txs_all_onchain:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when first transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when first transaction occurred
         first_txs_all_nft:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when first NFT transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when first NFT transaction occurred
         first_txs_all_gaming:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when first gaming transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when first gaming transaction occurred
         first_txs_all_gambling:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when first gambling transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when first gambling transaction occurred
         first_txs_in_onchain:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when first IN transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when first IN transaction occurred
         first_txs_in_nft:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when first IN NFT transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when first IN NFT transaction occurred
         first_txs_in_gaming:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when first IN gaming transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when first IN gaming transaction occurred
         first_txs_in_gambling:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when first IN gambling transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when first IN gambling transaction occurred
         first_txs_out_onchain:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when first OUT transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when first OUT transaction occurred
         first_txs_out_nft:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when first OUT NFT transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when first OUT NFT transaction occurred
         first_txs_out_gaming:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when first OUT gaming transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when first OUT gaming transaction occurred
         first_txs_out_gambling:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when first OUT gambling transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when first OUT gambling transaction occurred
         last_txs_all_onchain:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when last transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when last transaction occurred
         last_txs_all_nft:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when last NFT transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when last NFT transaction occurred
         last_txs_all_gaming:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when last gaming transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when last gaming transaction occurred
         last_txs_all_gambling:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when last gambling transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when last gambling transaction occurred
         last_txs_in_onchain:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when last IN transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when last IN transaction occurred
         last_txs_in_nft:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when last IN NFT transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when last IN NFT transaction occurred
         last_txs_in_gaming:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when last IN gaming transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when last IN gaming transaction occurred
         last_txs_in_gambling:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when last IN gambling transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when last IN gambling transaction occurred
         last_txs_out_onchain:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when last OUT transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when last OUT transaction occurred
         last_txs_out_nft:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when last OUT NFT transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when last OUT NFT transaction occurred
         last_txs_out_gaming:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when last OUT gaming transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when last OUT gaming transaction occurred
         last_txs_out_gambling:
-          type: string
-          example: "2021-10-10T11:11:16Z"
-          description: Time when last OUT gambling transaction occurred
+          type: integer
+          example: 1674481020
+          description: Unix timestamp when last OUT gambling transaction occurred
 
 security:
   - UserJWT: [ ]
