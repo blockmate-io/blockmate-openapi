@@ -465,6 +465,13 @@ paths:
                   icon:
                     type: string
                     example: https://api.blockmate.io/v1/onchain/static/bitcoin.png
+                  payment:
+                    type: object
+                    properties:
+                      encryption_key:
+                        type: string
+                        description: Public RSA key used to encrypt sensitive parameters in payment methods. Use OAEP padding scheme when encrypting the parameters. Supported only for onchain/btc, onchain/eth, exchange/binance and exchange/coinbase.
+                        example: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqUF7SFOH0pn44C/J5tpF\na/hnFU4WoQD+uOx3rjyzZK9XfOSOmJe6WDMB+kQ3jrIQWmgzLI0zmETYkH1HOKHl\nSpq1UOkAQt5hTJEHMEpJO3PuXmU9IqPjWAA8AE1YNAWu2xHELihDbiD9htSsiRVg\niCFZQnGjQX1gBvnu0CIPlzpnKQotKaf3RL3gBzrO66r2akN+w6XNqL3JlITsG+7v\noxNtizMjF2Ve4esrCpvWsyFgViTTTk/7WtcWrJqLg4JdPOLknBJV+eftpn4bHVF4\nQqcEhz0+QiyDCtNZ3ardCB5LA+/PNcGV5jG9Y4qe6BGhVX037O1pqZyCpKrD94SA\npwIDAQAB\n-----END PUBLIC KEY-----\n"
         403:
           description: Forbidden
           content:
@@ -526,6 +533,7 @@ paths:
                 required:
                   - id
                   - name
+                  - wallet
                   - description
                   - verified
                 properties:
@@ -535,6 +543,9 @@ paths:
                   name:
                     type: string
                     example: some-name
+                  wallet:
+                    type: string
+                    example: bc1qehppjga79h55swhar8aw0z6gdhycsj2nmrtfxz
                   description:
                     type: string
                     example: some-description
@@ -617,6 +628,633 @@ paths:
                   detail:
                     type: string
                     example: Not Found
+  #
+  # Payment savings
+  #
+  /v1/{account_provider}/payment/seed:
+    get:
+      summary: Generate random seed for wallet creation
+      operationId: GenerateSeed
+      tags:
+        - Payment savings
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - description: URL value from account_providers method
+          in: path
+          name: account_provider
+          required: true
+          schema:
+            enum:
+              - onchain/btc
+              - onchain/eth
+            example: onchain/btc
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - seed
+                properties:
+                  seed:
+                    example: 07ced2ea553fc878f8c0cae3a1e56a1db28610601602c98f590f2cc2782588f9
+                    type: string
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    example: Invalid token or expired token.
+                    type: string
+  /v1/{account_provider}/payment/connect:
+    post:
+      summary: Create new payment account
+      operationId: CreatePaymentAccount
+      tags:
+        - Payment savings
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - description: URL value from account_providers method
+          in: path
+          name: account_provider
+          required: true
+          schema:
+            enum:
+              - onchain/btc
+              - onchain/eth
+            example: onchain/btc
+      requestBody:
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - client_xpub_key
+                - user_xpub_key
+                - description
+                - payment_start
+                - payment_frequency
+              properties:
+                client_xpub_key:
+                  type: string
+                  example: xpub661MyMwAqRbcFQa24fvwjqttQQHHpeMMhF89omd9kWt9BDRqqFGTYbxZQqMQmH1n2Ts6GpWrnLs7J33hrAbs3Y95Hc6dvR1Pqv7h2EaE5VX
+                user_xpub_key:
+                  type: string
+                  example: xpub661MyMwAqRbcEga7dhKTyetKZ1AVQdwmMTpWMMdsZaVNPMyA27nNqqydpVo5aHzTAZH74oXLcfevhrQ1NAfvSPuhU9Lq4W3XrDuAWkkYyAh
+                description:
+                  type: string
+                  example: some-description
+                payment_start:
+                  type: integer
+                  example: 1697760000
+                  description: represented in seconds since 1.1.1970
+                payment_frequency:
+                  type: integer
+                  example: 604800
+                  description: represented in seconds
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                  - name
+                  - wallet
+                  - description
+                  - verified
+                  - client_derivation_path
+                  - user_derivation_path
+                properties:
+                  id:
+                    type: string
+                    example: 163b6df1-dc0b-4086-8922-6068fe1e653d
+                  name:
+                    type: string
+                    example: some-name
+                  wallet:
+                    type: string
+                    example: bc1qehppjga79h55swhar8aw0z6gdhycsj2nmrtfxz
+                  description:
+                    type: string
+                    example: some-description
+                  verified:
+                    type: boolean
+                    example: false
+                  client_derivation_path:
+                      example: m/44/0/0/0/1
+                      type: string
+                  user_derivation_path:
+                    example: m/44/0/0/0/1
+                    type: string
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    example: Account wallet already connected
+                    type: string
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    example: Invalid token or expired token.
+                    type: string
+  /v1/{account_provider}/account/{account_id}/payment/frequency:
+    get:
+      summary: Get payment frequency
+      operationId: GetPaymentFrequecy
+      tags:
+        - Payment savings
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - description: URL value from account_providers method
+          in: path
+          name: account_provider
+          required: true
+          schema:
+            enum:
+              - onchain/btc
+              - onchain/eth
+            example: onchain/btc
+        - description: Account ID
+          in: path
+          name: account_id
+          required: true
+          schema:
+            type: string
+            example: 163b6df1-dc0b-4086-8922-6068fe1e653d
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - payment_start
+                  - payment_frequency
+                properties:
+                  payment_start:
+                    type: integer
+                    example: 1697760000
+                    description: represented in seconds since 1.1.1970
+                  payment_frequency:
+                    type: integer
+                    example: 604800
+                    description: represented in seconds
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    example: Invalid token or expired token.
+                    type: string
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Not Found
+  /v1/{account_provider}/account/{account_id}/payment/deposit:
+    post:
+      summary: Deposit money to cryptocurrency wallet
+      operationId: DepositToAddress
+      tags:
+        - Payment savings
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - description: URL value from account_providers method
+          in: path
+          name: account_provider
+          required: true
+          schema:
+            enum:
+              - onchain/btc
+              - onchain/eth
+            example: onchain/btc
+        - description: Account ID
+          in: path
+          name: account_id
+          required: true
+          schema:
+            type: string
+            example: 163b6df1-dc0b-4086-8922-6068fe1e653d
+      requestBody:
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fiat_currency
+                - fiat_amount
+              properties:
+                fiat_currency:
+                  example: USD
+                  type: string
+                fiat_amount:
+                  example: 100
+                  type: number
+                  minimum: 0
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - redirect_uri
+                properties:
+                  redirect_uri:
+                    example: https://global.transak.com/?apiKey=test&cryptoCurrencyCode=btc&walletAddress=bc1qt4n63nrrsugxxel508nymalg667uqssyrufe8pkpl8v8a0zv0vfqx5yeze&fiatCurrency=eur&fiatAmount=200.0&productsAvailed=BUY&countryCode=en
+                    type: string
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    example: Amount must be positive value
+                    type: string
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    example: Invalid token or expired token.
+                    type: string
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Not Found
+  /v1/{account_provider}/account/{account_id}/payment/initialize:
+    post:
+      summary: Initialize withdrawal from cryptocurrency wallet
+      operationId: InitializeWithdraw
+      tags:
+        - Payment savings
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - description: URL value from account_providers method
+          in: path
+          name: account_provider
+          required: true
+          schema:
+            enum:
+              - onchain/btc
+              - onchain/eth
+            example: onchain/btc
+        - description: Account ID
+          in: path
+          name: account_id
+          required: true
+          schema:
+            type: string
+            example: 163b6df1-dc0b-4086-8922-6068fe1e653d
+      requestBody:
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fiat_currency
+                - crypto_amount
+              properties:
+                fiat_currency:
+                  example: USD
+                  type: string
+                crypto_amount:
+                  example: 0.5
+                  type: number
+                  minimum: 0
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - withdraw_id
+                  - redirect_uri
+                properties:
+                  withdraw_id:
+                    example: 33265e01-5f43-45e7-ad94-cd73bb83c154
+                    type: string
+                  redirect_uri:
+                    example: https://global.transak.com/?apiKey=test&cryptoCurrencyCode=btc&cryptoAmount=0.5&fiatCurrency=eur&partnerOrderId=33265e01-5f43-45e7-ad94-cd73bb83c154&redirectURL=http%3A%2F%2Fapi.blockmate.io%2Fv1%2Fonchain%2Fbtc%2Faccount%2F163b6df1-dc0b-4086-8922-6068fe1e653d%2Fpayment%2Fwebhook&productsAvailed=SELL&countryCode=en
+                    type: string
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    example: Amount must be positive value
+                    type: string
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    example: Invalid token or expired token.
+                    type: string
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Not Found
+  /v1/{account_provider}/account/{account_id}/payment/authorize:
+    post:
+      summary: Authorize withdrawal from cryptocurrency wallet
+      operationId: AuthorizeWithdraw
+      tags:
+        - Payment savings
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - description: URL value from account_providers method
+          in: path
+          name: account_provider
+          required: true
+          schema:
+            enum:
+              - onchain/btc
+              - onchain/eth
+            example: onchain/btc
+        - description: Account ID
+          in: path
+          name: account_id
+          required: true
+          schema:
+            type: string
+            example: 163b6df1-dc0b-4086-8922-6068fe1e653d
+      requestBody:
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - withdraw_id
+                - signatures
+                - threshold
+              properties:
+                withdraw_id:
+                  example: 33265e01-5f43-45e7-ad94-cd73bb83c154
+                  type: string
+                signatures:
+                  type: array
+                  items:
+                    type: string
+                    description: Encrypted with RSA public key defined in "encryption_key" parameter, returned from "GET /v1/{account_provider}/connect" method. Encryption must use OAEP padding scheme.
+                    example: "LGo7JVeKfH85F7Tec7O7z7PH8RM4Fvm2F8I24H4rL3KlGusDaC8BJIrKxeSHmpozqghvQTKrneHsmPDTTyvX/CWfUoaLPkK124VkPGXa90fAqnJgWboHoIftKSr+QpnAMmxkB6xB0JZDLgD1qKIfJ0CpgjzOH+Ys9rCLw2RSoHirhg1gI+Xbu0LjNqMHrPl3kx5Liy6SdPfHmOesNjGwmyP3TfA01bvQpAZnGj2brrEP5I/WZVqcI5RknOGFG3BbpybBGyQEndyafv4wcXvY3j5Gn+Q0QnoJFIgt8GyWxdHoeSw2/atOBqmwZDirpxUyOFMrdwZus3CnKLr2/7EwHQ=="
+                threshold:
+                  example: 2
+                  type: integer
+                  minimum: 2
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    example: Invalid token or expired token.
+                    type: string
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Not Found
+  /v1/{account_provider}/payment/accounts:
+    get:
+      summary: Get payment accounts
+      operationId: GetPaymentAccounts
+      tags:
+        - Payment savings
+      security:
+        - UserJWT: [ ]
+        - ProjectJWT: [ ]
+      parameters:
+        - description: URL value from account_providers method
+          in: path
+          name: account_provider
+          required: true
+          schema:
+            enum:
+              - onchain/btc
+              - onchain/eth
+            example: onchain/btc
+        - name: skip
+          in: query
+          description: Number of items to skip for paging purposes
+          schema:
+            type: integer
+            example: 0
+            minimum: 0
+        - name: limit
+          in: query
+          description: Maximum number of items to return
+          schema:
+            type: integer
+            example: 50
+            minimum: 0
+            maximum: 50
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - id
+                    - wallet
+                    - name
+                    - description
+                    - verified
+                    - client_derivation_path
+                    - user_derivation_path
+                  properties:
+                    id:
+                      example: 163b6df1-dc0b-4086-8922-6068fe1e653d
+                      type: string
+                    wallet:
+                      example: bc1qehppjga79h55swhar8aw0z6gdhycsj2nmrtfxz
+                      type: string
+                    name:
+                      example: btc
+                      type: string
+                    description:
+                      example: some-description
+                      type: string
+                    verified:
+                      example: false
+                      type: boolean
+                    client_derivation_path:
+                      example: m/44/0/0/0/1
+                      type: string
+                    user_derivation_path:
+                      example: m/44/0/0/0/1
+                      type: string
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    example: Invalid token or expired token.
+                    type: string
+  /v1/{account_provider}/payment/withdrawals:
+    get:
+      summary: Get payment withdrawals
+      operationId: GetPaymentWithdrawals
+      tags:
+        - Payment savings
+      security:
+        - UserJWT: [ ]
+        - ProjectJWT: [ ]
+      parameters:
+        - description: URL value from account_providers method
+          in: path
+          name: account_provider
+          required: true
+          schema:
+            enum:
+              - onchain/btc
+              - onchain/eth
+            example: onchain/btc
+        - name: skip
+          in: query
+          description: Number of items to skip for paging purposes
+          schema:
+            type: integer
+            example: 0
+            minimum: 0
+        - name: limit
+          in: query
+          description: Maximum number of items to return
+          schema:
+            type: integer
+            example: 50
+            minimum: 0
+            maximum: 50
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - id
+                    - currency
+                    - amount
+                    - state
+                  properties:
+                    id:
+                      example: 163b6df1-dc0b-4086-8922-6068fe1e653d
+                      type: string
+                    currency:
+                      example: USD
+                      type: string
+                    amount:
+                      example: 100
+                      type: number
+                      minimum: 0
+                    state:
+                      example: 1
+                      type: integer
+                      description: 0 - withdrawal was initialized. 1 - off-ramp process was finished. 2 - at least one signature was provided
+                      enum:
+                        - 0
+                        - 1
+                        - 2
+                    deposit_address:
+                      example: bc1qehppjga79h55swhar8aw0z6gdhycsj2nmrtfxz
+                      type: string
+                      description: provided when state is 1 or 2
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    example: Invalid token or expired token.
+                    type: string
   #
   # Aggregated info
   #
