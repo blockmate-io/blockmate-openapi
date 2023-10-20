@@ -450,13 +450,6 @@ paths:
                     type: string
                   fields:
                     type: object
-                    properties:
-                      description:
-                        type: string
-                        example: Account description
-                      wallet:
-                        type: string
-                        example: Address
                     additionalProperties:
                       type: string
                   oauth:
@@ -472,6 +465,17 @@ paths:
                         type: string
                         description: Public RSA key used to encrypt sensitive parameters in payment methods. Use OAEP padding scheme when encrypting the parameters. Supported only for onchain/btc, onchain/eth, exchange/binance and exchange/coinbase.
                         example: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqUF7SFOH0pn44C/J5tpF\na/hnFU4WoQD+uOx3rjyzZK9XfOSOmJe6WDMB+kQ3jrIQWmgzLI0zmETYkH1HOKHl\nSpq1UOkAQt5hTJEHMEpJO3PuXmU9IqPjWAA8AE1YNAWu2xHELihDbiD9htSsiRVg\niCFZQnGjQX1gBvnu0CIPlzpnKQotKaf3RL3gBzrO66r2akN+w6XNqL3JlITsG+7v\noxNtizMjF2Ve4esrCpvWsyFgViTTTk/7WtcWrJqLg4JdPOLknBJV+eftpn4bHVF4\nQqcEhz0+QiyDCtNZ3ardCB5LA+/PNcGV5jG9Y4qe6BGhVX037O1pqZyCpKrD94SA\npwIDAQAB\n-----END PUBLIC KEY-----\n"
+                      ip_addresses:
+                        type: array
+                        description: IP addresses whitelisted for payment methods. Supported only for exchange/binance and exchange/coinbase.
+                        items:
+                          type: string
+                          example: 54.38.221.130
+                      fields:
+                        type: object
+                        description: Supported only for exchange/binance and exchange/coinbase.
+                        additionalProperties:
+                          type: string
         403:
           description: Forbidden
           content:
@@ -629,20 +633,352 @@ paths:
                     type: string
                     example: Not Found
   #
-  # Payment savings
+  # Payments - transaction initiation
   #
-  /v1/{account_provider}/payment/seed:
-    get:
-      summary: Generate random seed for wallet creation
-      operationId: GenerateSeed
+  /v1/{exchange_provider}/account/{account_id}/payment/connect:
+    post:
+      summary: Create new exchange payment account
+      operationId: CreateExchangePaymentAccount
       tags:
-        - Payment savings
+        - Payments - transaction initiation
       security:
         - UserJWT: [ ]
       parameters:
         - description: URL value from account_providers method
           in: path
-          name: account_provider
+          name: exchange_provider
+          required: true
+          schema:
+            enum:
+              - exchange/binance
+              - exchange/coinbase
+            example: onchain/btc
+        - description: Account ID
+          in: path
+          name: account_id
+          required: true
+          schema:
+            type: string
+            example: 163b6df1-dc0b-4086-8922-6068fe1e653d
+      requestBody:
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - api_key
+                - api_secret
+                - password
+              properties:
+                api_key:
+                  example: "VD+IRQAmCU1PCv0oAE8HcDNOvEzWFyURybhN8uvuRCfoWkhSwxTCYdZv2aorAbk+Z5hfF10HsZXtc0ZUkFSobk+R4No7Byr8CIHYGCEjao+bLtVa0mhVCFDU2Mm8UrY5cC8VbD0rm6ja5+W6pEsjqrMZZkjW7BUP0YRGSBkzUD2qezrtXmOsx19wiF1w7Xxg0XJGngwsSqI44/k1oFpQEi6cH0txllnmfAT0uHJt6crov1HuzwKP6drvHDyAQblAUibqcyvfwurPaNiNGCWxHqnmiY/X8EQLgGfMIqgHcC+aZNrKsKzjUf557czsibeJJ+aj/pDoXZH7/yIXTTBFag=="
+                  description: Encrypted with RSA public key defined in "encryption_key" parameter, returned from "GET /v1/{account_provider}/connect" method. Encryption must use OAEP padding scheme.
+                  type: string
+                api_secret:
+                  example: "ZvOw93HYUX+U/HnbzR+t5dR/dcxMa2XoTzDwJYXWWLStMAh1T29ESF4qfx0vIqKUl25TyPfZotYtHhIkUc34HcNgVZs4obTZLKdiqExIJSW6bHN28gG3WqRWDVBUZCmMJ4/CD7f3hBMMQVFvUxvgxkwpHWsjZRBE2C6WX3tRjHuEWMHdBOPsVfT+AjfbU0W+yEQLD7YsdFZZg2PAxU1dIFCotNVzSd7Z10AGYvAj28M4Dh802WADdJGxYXHRtDufEmphwJQKMIF5fIkXWcnjLKgpBkhLKXk5ZDLwRU+FkyfKJCPjvobqV21lv7Yd23nVbl9kt+0Lr8XtC7Aq+c4KMA=="
+                  description: Encrypted with RSA public key defined in "encryption_key" parameter, returned from "GET /v1/{account_provider}/connect" method. Encryption must use OAEP padding scheme.
+                  type: string
+                password:
+                  example: "kPqHhJYlnRl8zrVVYek5c+OerrxnLL1+o5TYbXc45jVNenvdxbeGKhObXofHFm+8NYw0SIwXi1V6Vb0/F1tba64pVzClBBWyI+1F0qMg2+iF0ZhSS4A0l8wMrBTjHXTxok+cuM9nwvikCsG64XJvyQJD2OzaX42j0gXef3ocOkUv3SuU745ZuTFOkh574uzNoowRc68KUPX+XG2b4fvD0cn2gBhkbusFSEPshqL5QfqAubXnYT1sHPLL2mBqZYM3FzVBi2NOfo3qM7LKzS1X1zjKocCIro7rMEHJfWEpmw+GUgOGJZqseAvYXcQRu5gjrk9tl/Jfr7r4Zph7nPYkEQ=="
+                  description: Encrypted with RSA public key defined in "encryption_key" parameter, returned from "GET /v1/{account_provider}/connect" method. Encryption must use OAEP padding scheme.
+                  type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - wallet_id
+                properties:
+                  wallet_id:
+                    example: "43d03509-6243-455c-9321-9b1d2705b19f:93f77e4d-f320-4b8e-9245-55723da7f38e"
+                    type: string
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    example: Account wallet already connected.
+                    type: string
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    example: Invalid token or expired token.
+                    type: string
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Not Found
+  /v1/{exchange_provider}/account/{account_id}/payment:
+    delete:
+      summary: Remove exchange payment account
+      operationId: RemoveExchangePaymentAccount
+      tags:
+        - Payments - transaction initiation
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - description: URL value from account_providers method
+          in: path
+          name: exchange_provider
+          required: true
+          schema:
+            enum:
+              - exchange/binance
+              - exchange/coinbase
+            example: onchain/btc
+        - description: Account ID
+          in: path
+          name: account_id
+          required: true
+          schema:
+            type: string
+            example: 163b6df1-dc0b-4086-8922-6068fe1e653d
+        - description: Wallet ID
+          in: query
+          name: wallet_id
+          required: true
+          schema:
+            type: string
+            example: "43d03509-6243-455c-9321-9b1d2705b19f:93f77e4d-f320-4b8e-9245-55723da7f38e"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    example: Invalid token or expired token.
+                    type: string
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Not Found
+  /v1/{exchange_provider}/account/{account_id}/payment/initialize:
+    post:
+      summary: Initialize payment from exchange
+      operationId: InitializeExchangePayment
+      tags:
+        - Payments - transaction initiation
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - description: URL value from account_providers method
+          in: path
+          name: exchange_provider
+          required: true
+          schema:
+            enum:
+              - exchange/binance
+              - exchange/coinbase
+            example: onchain/btc
+        - description: Account ID
+          in: path
+          name: account_id
+          required: true
+          schema:
+            type: string
+            example: 163b6df1-dc0b-4086-8922-6068fe1e653d
+      requestBody:
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+                - destination_address
+                - amount
+                - currency
+              properties:
+                wallet_id:
+                  example: "43d03509-6243-455c-9321-9b1d2705b19f:93f77e4d-f320-4b8e-9245-55723da7f38e"
+                  type: string
+                destination_address:
+                  example: bc1qehppjga79h55swhar8aw0z6gdhycsj2nmrtfxz
+                  type: string
+                amount:
+                  example: 0.5
+                  type: number
+                currency:
+                  example: BTC
+                  type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - mfa_id
+                  - nonce
+                properties:
+                  mfa_id:
+                    example: "77d4efb7-0cbd-4548-b0b5-cd05b016dfcc"
+                    type: string
+                  nonce:
+                    example: "cbd3dc6f-d5b0-447d-8487-c0e7254ab127"
+                    type: string
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    example: Invalid token or expired token.
+                    type: string
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Not Found
+  /v1/{exchange_provider}/account/{account_id}/payment/authorize:
+    post:
+      summary: Authorize payment from exchange
+      operationId: AuthorizeExchangePayment
+      tags:
+        - Payments - transaction initiation
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - description: URL value from account_providers method
+          in: path
+          name: exchange_provider
+          required: true
+          schema:
+            enum:
+              - exchange/binance
+              - exchange/coinbase
+            example: onchain/btc
+        - description: Account ID
+          in: path
+          name: account_id
+          required: true
+          schema:
+            type: string
+            example: 163b6df1-dc0b-4086-8922-6068fe1e653d
+      requestBody:
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+                - destination_address
+                - amount
+                - currency
+                - nonce
+                - mfa_id
+                - otp
+                - password
+              properties:
+                wallet_id:
+                  example: "43d03509-6243-455c-9321-9b1d2705b19f:93f77e4d-f320-4b8e-9245-55723da7f38e"
+                  type: string
+                destination_address:
+                  example: bc1qehppjga79h55swhar8aw0z6gdhycsj2nmrtfxz
+                  type: string
+                amount:
+                  example: 0.5
+                  type: number
+                currency:
+                  example: BTC
+                  type: string
+                nonce:
+                  example: "cbd3dc6f-d5b0-447d-8487-c0e7254ab127"
+                  type: string
+                mfa_id:
+                  example: "77d4efb7-0cbd-4548-b0b5-cd05b016dfcc"
+                  type: string
+                otp:
+                  example: 123456
+                  type: string
+                password:
+                  example: "kPqHhJYlnRl8zrVVYek5c+OerrxnLL1+o5TYbXc45jVNenvdxbeGKhObXofHFm+8NYw0SIwXi1V6Vb0/F1tba64pVzClBBWyI+1F0qMg2+iF0ZhSS4A0l8wMrBTjHXTxok+cuM9nwvikCsG64XJvyQJD2OzaX42j0gXef3ocOkUv3SuU745ZuTFOkh574uzNoowRc68KUPX+XG2b4fvD0cn2gBhkbusFSEPshqL5QfqAubXnYT1sHPLL2mBqZYM3FzVBi2NOfo3qM7LKzS1X1zjKocCIro7rMEHJfWEpmw+GUgOGJZqseAvYXcQRu5gjrk9tl/Jfr7r4Zph7nPYkEQ=="
+                  description: Encrypted with RSA public key defined in "encryption_key" parameter, returned from "GET /v1/{account_provider}/connect" method. Encryption must use OAEP padding scheme.
+                  type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    example: Invalid token or expired token.
+                    type: string
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Not Found
+  #
+  # Payments - crypto savings
+  #
+  /v1/{onchain_provider}/payment/seed:
+    get:
+      summary: Generate random seed for wallet creation
+      operationId: GenerateSeed
+      tags:
+        - Payments - crypto savings
+      security:
+        - UserJWT: [ ]
+      parameters:
+        - description: URL value from account_providers method
+          in: path
+          name: onchain_provider
           required: true
           schema:
             enum:
@@ -672,18 +1008,18 @@ paths:
                   detail:
                     example: Invalid token or expired token.
                     type: string
-  /v1/{account_provider}/payment/connect:
+  /v1/{onchain_provider}/payment/connect:
     post:
-      summary: Create new payment account
-      operationId: CreatePaymentAccount
+      summary: Create new onchain payment account
+      operationId: CreateOnchainPaymentAccount
       tags:
-        - Payment savings
+        - Payments - crypto savings
       security:
         - UserJWT: [ ]
       parameters:
         - description: URL value from account_providers method
           in: path
-          name: account_provider
+          name: onchain_provider
           required: true
           schema:
             enum:
@@ -777,18 +1113,18 @@ paths:
                   detail:
                     example: Invalid token or expired token.
                     type: string
-  /v1/{account_provider}/account/{account_id}/payment/frequency:
+  /v1/{onchain_provider}/account/{account_id}/payment/frequency:
     get:
       summary: Get payment frequency
       operationId: GetPaymentFrequecy
       tags:
-        - Payment savings
+        - Payments - crypto savings
       security:
         - UserJWT: [ ]
       parameters:
         - description: URL value from account_providers method
           in: path
-          name: account_provider
+          name: onchain_provider
           required: true
           schema:
             enum:
@@ -841,18 +1177,18 @@ paths:
                   detail:
                     type: string
                     example: Not Found
-  /v1/{account_provider}/account/{account_id}/payment/deposit:
+  /v1/{onchain_provider}/account/{account_id}/payment/deposit:
     post:
       summary: Deposit money to cryptocurrency wallet
       operationId: DepositToAddress
       tags:
-        - Payment savings
+        - Payments - crypto savings
       security:
         - UserJWT: [ ]
       parameters:
         - description: URL value from account_providers method
           in: path
-          name: account_provider
+          name: onchain_provider
           required: true
           schema:
             enum:
@@ -926,18 +1262,18 @@ paths:
                   detail:
                     type: string
                     example: Not Found
-  /v1/{account_provider}/account/{account_id}/payment/initialize:
+  /v1/{onchain_provider}/account/{account_id}/payment/initialize:
     post:
       summary: Initialize withdrawal from cryptocurrency wallet
       operationId: InitializeWithdraw
       tags:
-        - Payment savings
+        - Payments - crypto savings
       security:
         - UserJWT: [ ]
       parameters:
         - description: URL value from account_providers method
           in: path
-          name: account_provider
+          name: onchain_provider
           required: true
           schema:
             enum:
@@ -1015,18 +1351,18 @@ paths:
                   detail:
                     type: string
                     example: Not Found
-  /v1/{account_provider}/account/{account_id}/payment/authorize:
+  /v1/{onchain_provider}/account/{account_id}/payment/authorize:
     post:
       summary: Authorize withdrawal from cryptocurrency wallet
       operationId: AuthorizeWithdraw
       tags:
-        - Payment savings
+        - Payments - crypto savings
       security:
         - UserJWT: [ ]
       parameters:
         - description: URL value from account_providers method
           in: path
-          name: account_provider
+          name: onchain_provider
           required: true
           schema:
             enum:
@@ -1091,19 +1427,19 @@ paths:
                   detail:
                     type: string
                     example: Not Found
-  /v1/{account_provider}/payment/accounts:
+  /v1/{onchain_provider}/payment/accounts:
     get:
       summary: Get payment accounts
       operationId: GetPaymentAccounts
       tags:
-        - Payment savings
+        - Payments - crypto savings
       security:
         - UserJWT: [ ]
         - ProjectJWT: [ ]
       parameters:
         - description: URL value from account_providers method
           in: path
-          name: account_provider
+          name: onchain_provider
           required: true
           schema:
             enum:
@@ -1174,19 +1510,19 @@ paths:
                   detail:
                     example: Invalid token or expired token.
                     type: string
-  /v1/{account_provider}/payment/withdrawals:
+  /v1/{onchain_provider}/payment/withdrawals:
     get:
       summary: Get payment withdrawals
       operationId: GetPaymentWithdrawals
       tags:
-        - Payment savings
+        - Payments - crypto savings
       security:
         - UserJWT: [ ]
         - ProjectJWT: [ ]
       parameters:
         - description: URL value from account_providers method
           in: path
-          name: account_provider
+          name: onchain_provider
           required: true
           schema:
             enum:
