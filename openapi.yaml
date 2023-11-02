@@ -1033,15 +1033,11 @@ paths:
             schema:
               type: object
               required:
-                - client_xpub_key
                 - user_xpub_key
                 - description
                 - payment_start
                 - payment_frequency
               properties:
-                client_xpub_key:
-                  type: string
-                  example: xpub661MyMwAqRbcFQa24fvwjqttQQHHpeMMhF89omd9kWt9BDRqqFGTYbxZQqMQmH1n2Ts6GpWrnLs7J33hrAbs3Y95Hc6dvR1Pqv7h2EaE5VX
                 user_xpub_key:
                   type: string
                   example: xpub661MyMwAqRbcEga7dhKTyetKZ1AVQdwmMTpWMMdsZaVNPMyA27nNqqydpVo5aHzTAZH74oXLcfevhrQ1NAfvSPuhU9Lq4W3XrDuAWkkYyAh
