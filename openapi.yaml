@@ -1109,10 +1109,10 @@ paths:
                   detail:
                     example: Invalid token or expired token.
                     type: string
-  /v1/{onchain_provider}/account/{account_id}/payment/frequency:
+  /v1/{onchain_provider}/account/{account_id}/payment:
     get:
-      summary: Get payment frequency
-      operationId: GetPaymentFrequecy
+      summary: Get payment account details
+      operationId: GetPaymentAccountDetails
       tags:
         - Payments - crypto savings
       security:
@@ -1142,9 +1142,29 @@ paths:
               schema:
                 type: object
                 required:
+                  - name
+                  - wallet
+                  - description
+                  - verified
                   - payment_start
                   - payment_frequency
+                  - client_derivation_path
+                  - user_derivation_path
+                  - redeem_script
+                  - withdrawals
                 properties:
+                  name:
+                    type: string
+                    example: some-name
+                  wallet:
+                    type: string
+                    example: bc1qehppjga79h55swhar8aw0z6gdhycsj2nmrtfxz
+                  description:
+                    type: string
+                    example: some-description
+                  verified:
+                    type: boolean
+                    example: false
                   payment_start:
                     type: integer
                     example: 1697760000
@@ -1153,6 +1173,47 @@ paths:
                     type: integer
                     example: 604800
                     description: represented in seconds
+                  client_derivation_path:
+                    example: m/44/0/0/0/1
+                    type: string
+                  user_derivation_path:
+                    example: m/44/0/0/0/1
+                    type: string
+                  redeem_script:
+                    example: 630190b2752103742f0e5984c3a181ce3838aa8ad2e53f702290add5a25e14fdda5f0f846dbe51ad516752682102aa9650dc0065243bb0bb35ee63235c51c8f99b7bc701d13091366b9cf45ab66b2102b2ec0b8a11e9ef3179f3e7876e39d7add67a7089bf11484100da52310a9f6fd352ae
+                    type: string
+                  withdrawals:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - id
+                        - currency
+                        - amount
+                        - state
+                      properties:
+                        id:
+                          example: 163b6df1-dc0b-4086-8922-6068fe1e653d
+                          type: string
+                        currency:
+                          example: USD
+                          type: string
+                        amount:
+                          example: 100
+                          type: number
+                          minimum: 0
+                        state:
+                          example: 1
+                          type: integer
+                          description: 0 - withdrawal was initialized. 1 - off-ramp process was finished. 2 - at least one signature was provided
+                          enum:
+                            - 0
+                            - 1
+                            - 2
+                        deposit_address:
+                          example: bc1qehppjga79h55swhar8aw0z6gdhycsj2nmrtfxz
+                          type: string
+                          description: provided when state is 1 or 2
         403:
           description: Forbidden
           content:
