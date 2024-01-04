@@ -739,7 +739,6 @@ paths:
                       enum:
                         - crypto_wallet
                         - crypto_exchange
-                        - crypto_nft
                     url:
                       example: onchain/bitcoin/account/4cf7cf36-52a2-11ec-85b8-00155de33000
                       type: string
@@ -832,7 +831,6 @@ paths:
                               enum:
                                 - crypto_wallet
                                 - crypto_exchange
-                                - crypto_nft
                             balance:
                               type: array
                               items:
@@ -970,7 +968,6 @@ paths:
                           enum:
                             - crypto_wallet
                             - crypto_exchange
-                            - crypto_nft
                         state:
                           type: object
                           properties:
@@ -1008,7 +1005,6 @@ paths:
                           enum:
                             - crypto_wallet
                             - crypto_exchange
-                            - crypto_nft
                         side:
                           type: string
                           example: some-side
@@ -2080,7 +2076,6 @@ components:
           enum:
             - crypto_wallet
             - crypto_exchange
-            - crypto_nft
         url:
           type: string
           example: onchain/bitcoin
@@ -2199,7 +2194,6 @@ components:
           enum:
             - crypto_wallet
             - crypto_exchange
-            - crypto_nft
         account_url:
           type: string
           example: onchain/btc
