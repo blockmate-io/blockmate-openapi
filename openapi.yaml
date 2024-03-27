@@ -2101,14 +2101,6 @@ components:
         currency_symbol:
           type: string
           example: USDT
-        image_name:
-          type: string
-          example: Alvibop
-          nullable: true
-        image_url:
-          type: string
-          example: https://storage.googleapis.com/starly-prod.appspot.com/users/07SXODs3nHWOc0udxtCA7hU9KgR2/collections/pSYegq3aubUCodcy1t4u/cards/16/converted_cover1632338824700_600x800.mp4
-          nullable: true
         converted_currency:
           type: string
           example: USD
@@ -2149,14 +2141,6 @@ components:
         fee:
           type: boolean
           example: false
-        image_name:
-          type: string
-          example: Alvibop
-          nullable: true
-        image_url:
-          type: string
-          example: https://storage.googleapis.com/starly-prod.appspot.com/users/07SXODs3nHWOc0udxtCA7hU9KgR2/collections/pSYegq3aubUCodcy1t4u/cards/16/converted_cover1632338824700_600x800.mp4
-          nullable: true
         converted_currency:
           type: string
           example: USD
